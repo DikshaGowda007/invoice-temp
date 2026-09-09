@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/*
+ * InvoiceHub theme tokens — mirrors the locked design canvas mockup
+ * (see PLAN.md > UI direction). Warm neutral base + coral/orange accent,
+ * friendly/rounded. Light values on :root, dark values under the media
+ * query — swap to a data-theme attribute later if a manual toggle is added.
+ */
+:root {
+  --bg-app: #faf9f5;
+  --bg-surface: #ffffff;
+  --border: #e8e3da;
+  --text: #24211c;
+  --text-muted: #7a7368;
+  --text-subtle: #a8a096;
+  --primary: #d97757;
+  --primary-hover: #c76a4c;
+  --primary-fg: #ffffff;
+  --accent-bg: #f2ede6;
+  --brand-tint: #fbe8df;
+  --success: #3f7d4f;
+  --success-bg: #e8f3ea;
+  --info: #3d6fd1;
+  --info-bg: #e9eefb;
+  --warning: #b9832c;
+  --warning-bg: #faf1df;
+  --danger: #c1483f;
+  --danger-bg: #fbe9e6;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-app: #1c1b19;
+    --bg-surface: #242320;
+    --border: #37352f;
+    --text: #f2efe9;
+    --text-muted: #a39c8f;
+    --text-subtle: #6f695f;
+    --primary: #e08968;
+    --primary-hover: #e89b7e;
+    --primary-fg: #1c1b19;
+    --accent-bg: #2c2a25;
+    --brand-tint: #3a2a22;
+    --success: #6fa859;
+    --success-bg: #223226;
+    --info: #5a9bec;
+    --info-bg: #1f2a3d;
+    --warning: #dabe4a;
+    --warning-bg: #332c1a;
+    --danger: #dc8290;
+    --danger-bg: #3a2426;
+
+    color-scheme: dark;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg-app);
+  color: var(--text);
+}
+
+#root {
+  min-height: 100svh;
+}
