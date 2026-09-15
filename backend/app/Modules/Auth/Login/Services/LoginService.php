@@ -6,7 +6,9 @@ use App\Constants\CommonConstant;
 use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Models\User;
 use App\Modules\Auth\JwtService;
+use App\Repositories\DAO\UserDAO;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
@@ -21,6 +23,7 @@ class LoginService
     {
         $user = collect($this->validateUser($email, $password));
         $token = $this->createToken($user);
+        $this->updateUserLastLoginTime((int) $user->get('id'));
         $this->queueCookie($token);
 
         return [
@@ -52,6 +55,13 @@ class LoginService
             'loggedin_user_last_name' => $user->get('last_name'),
             'loggedin_user_email' => $user->get('email'),
         ]);
+    }
+
+    private function updateUserLastLoginTime(int $userId): void
+    {
+        $userDao = new UserDAO;
+        $userDao->setLastLogin(Carbon::now()->format('Y-m-d H:i:s'));
+        $this->userRepository->updateById($userId, $userDao);
     }
 
     private function formatUser(Collection $user): array

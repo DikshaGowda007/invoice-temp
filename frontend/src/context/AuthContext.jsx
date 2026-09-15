@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react'
+import { authApi } from '@/api/auth.api'
 import { storage } from '@/services/storage.service'
 
 const AuthContext = createContext(null)
@@ -14,10 +15,21 @@ export function AuthProvider({ children }) {
     setUser(userData)
   }
 
+  const logout = async () => {
+    try {
+      await authApi.logout()
+    } catch {
+    } finally {
+      storage.clear()
+      setToken(null)
+      setUser(null)
+    }
+  }
+
   const isAuthenticated = !!token
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated, login }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

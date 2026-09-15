@@ -12,6 +12,10 @@ class UserDAO
 
     private ?string $password = null;
 
+    private ?string $lastLogin = null;
+
+    private ?string $updatedAt = null;
+
     public function toArray(): array
     {
         $collection = [];
@@ -27,6 +31,12 @@ class UserDAO
         }
         if (isset($this->password)) {
             $collection['password'] = $this->password;
+        }
+        if (isset($this->lastLogin)) {
+            $collection['last_login'] = $this->lastLogin;
+        }
+        if (isset($this->updatedAt)) {
+            $collection['updated_at'] = $this->updatedAt;
         }
 
         return $collection;
@@ -100,6 +110,42 @@ class UserDAO
     public function setPassword(?string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of lastLogin
+     */
+    public function getLastLogin(): ?string
+    {
+        return $this->lastLogin;
+    }
+
+    /**
+     * Set the value of lastLogin
+     */
+    public function setLastLogin(?string $lastLogin): self
+    {
+        $this->lastLogin = $lastLogin;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of updatedAt
+     */
+    public function getUpdatedAt(): ?string
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Set the value of updatedAt
+     */
+    public function setUpdatedAt(?string $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

@@ -15,4 +15,9 @@ class CommonUtils
     {
         return ['status' => CommonConstant::SUCCESS, 'data' => $data];
     }
+
+    public static function successResponse(string $message): array
+    {
+        return ['status' => CommonConstant::SUCCESS, 'data' => $message];
+    }
 }

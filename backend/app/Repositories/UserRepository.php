@@ -11,4 +11,6 @@ interface UserRepository
     public function insert(UserDAO $userDao): User;
 
     public function findByEmail(string $email): Collection;
+
+    public function updateById(int $userId, UserDAO $userDao): bool;
 }
