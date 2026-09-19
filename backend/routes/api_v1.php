@@ -25,6 +25,9 @@ Route::prefix('clients')->middleware(['jwt.verify'])->group(function () {
 Route::prefix('invoices')->middleware(['jwt.verify'])->group(function () {
     Route::post('/list', [InvoiceController::class, 'list'])->name('InvoiceController.list');
     Route::post('/get', [InvoiceController::class, 'get'])->name('InvoiceController.get');
+    Route::post('/download', [InvoiceController::class, 'download'])->name('InvoiceController.download');
+    Route::post('/download-status', [InvoiceController::class, 'downloadStatus'])->name('InvoiceController.downloadStatus');
+    Route::post('/download-result', [InvoiceController::class, 'downloadResult'])->name('InvoiceController.downloadResult');
     Route::post('/add', [InvoiceController::class, 'add'])->name('InvoiceController.add');
     Route::post('/clone', [InvoiceController::class, 'clone'])->name('InvoiceController.clone');
     Route::post('/edit', [InvoiceController::class, 'edit'])->name('InvoiceController.edit');

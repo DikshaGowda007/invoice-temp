@@ -8,6 +8,8 @@ class HttpStatusConstant
 
     public const CREATED = 201;
 
+    public const ACCEPTED = 202;
+
     public const UNAUTHORIZED = 401;
 
     public const NOT_FOUND = 404;

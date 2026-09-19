@@ -14,6 +14,9 @@ export const API = {
   INVOICES: {
     LIST: '/invoices/list',
     GET: '/invoices/get',
+    DOWNLOAD: '/invoices/download',
+    DOWNLOAD_STATUS: '/invoices/download-status',
+    DOWNLOAD_RESULT: '/invoices/download-result',
     ADD: '/invoices/add',
     CLONE: '/invoices/clone',
     EDIT: '/invoices/edit',

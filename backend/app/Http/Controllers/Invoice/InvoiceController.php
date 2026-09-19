@@ -9,6 +9,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Invoice\Add\DetailsRequest as AddDetailsRequest;
 use App\Http\Requests\V1\Invoice\Clone\DetailsRequest as CloneDetailsRequest;
 use App\Http\Requests\V1\Invoice\Delete\DetailsRequest as DeleteDetailsRequest;
+use App\Http\Requests\V1\Invoice\Download\DetailsRequest as DownloadDetailsRequest;
+use App\Http\Requests\V1\Invoice\DownloadResult\DetailsRequest as DownloadResultDetailsRequest;
+use App\Http\Requests\V1\Invoice\DownloadStatus\DetailsRequest as DownloadStatusDetailsRequest;
 use App\Http\Requests\V1\Invoice\Edit\DetailsRequest as EditDetailsRequest;
 use App\Http\Requests\V1\Invoice\Get\DetailsRequest as GetDetailsRequest;
 use App\Http\Requests\V1\Invoice\LineItem\Add\DetailsRequest as AddLineItemDetailsRequest;
@@ -19,6 +22,9 @@ use App\Http\Requests\V1\Invoice\UpdateStatus\DetailsRequest as UpdateStatusDeta
 use App\Modules\V1\Invoice\Services\Add\DetailsService as AddDetailsService;
 use App\Modules\V1\Invoice\Services\Clone\DetailsService as CloneDetailsService;
 use App\Modules\V1\Invoice\Services\Delete\DetailsService as DeleteDetailsService;
+use App\Modules\V1\Invoice\Services\Download\DetailsService as DownloadDetailsService;
+use App\Modules\V1\Invoice\Services\DownloadResult\DetailsService as DownloadResultDetailsService;
+use App\Modules\V1\Invoice\Services\DownloadStatus\DetailsService as DownloadStatusDetailsService;
 use App\Modules\V1\Invoice\Services\Edit\DetailsService as EditDetailsService;
 use App\Modules\V1\Invoice\Services\Get\DetailsService as GetDetailsService;
 use App\Modules\V1\Invoice\Services\LineItem\Add\DetailsService as AddLineItemDetailsService;
@@ -28,6 +34,7 @@ use App\Modules\V1\Invoice\Services\List\DetailsService as ListDetailsService;
 use App\Modules\V1\Invoice\Services\UpdateStatus\DetailsService as UpdateStatusDetailsService;
 use App\Utils\CommonUtils;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Throwable;
 
 class InvoiceController extends Controller
@@ -110,6 +117,87 @@ class InvoiceController extends Controller
             return response()->json(
                 CommonUtils::errorResponse($e->getMessage()),
                 HttpStatusConstant::NOT_FOUND,
+            );
+        } catch (Throwable $e) {
+            report($e);
+
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function download(DownloadDetailsRequest $downloadDetailsRequest): JsonResponse
+    {
+        try {
+            $downloadDetailsService = app(DownloadDetailsService::class);
+            $invoiceId = (int) $downloadDetailsRequest->input('id');
+
+            return response()->json(
+                $downloadDetailsService->dispatch($invoiceId),
+                HttpStatusConstant::ACCEPTED,
+            );
+        } catch (DataNotFoundException $e) {
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::NOT_FOUND,
+            );
+        } catch (Throwable $e) {
+            report($e);
+
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function downloadStatus(DownloadStatusDetailsRequest $downloadStatusDetailsRequest): JsonResponse
+    {
+        try {
+            $downloadStatusDetailsService = app(DownloadStatusDetailsService::class);
+            $requestId = (string) $downloadStatusDetailsRequest->input('request_id');
+
+            return response()->json(
+                $downloadStatusDetailsService->status($requestId),
+                HttpStatusConstant::OK,
+            );
+        } catch (DataNotFoundException $e) {
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::NOT_FOUND,
+            );
+        } catch (Throwable $e) {
+            report($e);
+
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function downloadResult(DownloadResultDetailsRequest $downloadResultDetailsRequest): SymfonyResponse
+    {
+        try {
+            $downloadResultDetailsService = app(DownloadResultDetailsService::class);
+            $requestId = (string) $downloadResultDetailsRequest->input('request_id');
+            $pdf = $downloadResultDetailsService->result($requestId);
+
+            return response($pdf['content'], HttpStatusConstant::OK, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="'.$pdf['filename'].'"',
+            ]);
+        } catch (DataNotFoundException $e) {
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::NOT_FOUND,
+            );
+        } catch (InvalidDataException $e) {
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::UNPROCESSABLE_ENTITY,
             );
         } catch (Throwable $e) {
             report($e);

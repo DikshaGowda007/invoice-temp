@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft, Check, Pencil, Plus, Trash2, X } from 'lucide-react'
+import { ArrowLeft, Check, Download, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -50,6 +50,9 @@ export default function InvoiceDetailPage() {
     statusError,
     deleteInvoice,
     isDeleting,
+    downloadPdf,
+    isDownloading,
+    downloadErrorMessage,
   } = useInvoiceDetail()
   const lineItems = useLineItems(invoiceId)
   const [confirmingCancel, setConfirmingCancel] = useState(false)
@@ -121,6 +124,10 @@ export default function InvoiceDetailPage() {
 
             <div className="flex flex-col items-end gap-2">
               <div className="flex flex-wrap justify-end gap-2">
+                <Button size="sm" variant="outline" disabled={isDownloading} onClick={() => downloadPdf()}>
+                  <Download data-icon="inline-start" size={13} />
+                  {isDownloading ? 'Preparing…' : 'Download PDF'}
+                </Button>
                 <Button size="sm" variant="outline" render={<Link to={invoiceEditPath(invoice.id)} />}>
                   <Pencil data-icon="inline-start" size={13} />
                   Edit details
@@ -148,6 +155,7 @@ export default function InvoiceDetailPage() {
                 )}
               </div>
               {statusError && <p className="text-xs text-destructive">{statusError}</p>}
+              {downloadErrorMessage && <p className="text-xs text-destructive">{downloadErrorMessage}</p>}
             </div>
           </div>
         </CardContent>
