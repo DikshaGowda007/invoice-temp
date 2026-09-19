@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { FormAlert } from '@/components/common/FormAlert'
 import { AuthField } from '@/components/forms/AuthField'
 import { LockIcon, MailIcon, UserIcon } from '@/components/forms/AuthFieldIcons'
 import { useRegisterForm } from '@/features/auth/hooks/useRegisterForm'
@@ -59,7 +60,7 @@ export default function RegisterPage() {
           {...register('password_confirmation')}
         />
 
-        {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+        <FormAlert>{errorMessage}</FormAlert>
 
         <Button
           type="submit"

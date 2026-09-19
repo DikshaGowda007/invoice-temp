@@ -1,5 +1,6 @@
 import { ArrowLeft, Mail, MapPin, Phone, StickyNote, User, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { FormAlert } from '@/components/common/FormAlert'
 import { FormField } from '@/components/forms/FormField'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -116,7 +117,7 @@ export default function ClientFormPage() {
                   />
                 </FormField>
 
-                {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+                <FormAlert>{errorMessage}</FormAlert>
 
                 <div className="mt-1 flex items-center gap-2.5">
                   <Button type="submit" disabled={isPending} className="flex-1 shadow-[0_8px_20px_rgba(217,119,87,0.28)]">

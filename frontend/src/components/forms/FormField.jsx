@@ -13,7 +13,11 @@ export function FormField({ id, label, icon, error, children }) {
         {label}
       </Label>
       {children}
-      {error && <p className="mt-1.5 text-sm text-destructive">{error}</p>}
+      {error && (
+        <p className="animate-in fade-in slide-in-from-top-1 mt-1.5 text-sm text-destructive duration-200">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

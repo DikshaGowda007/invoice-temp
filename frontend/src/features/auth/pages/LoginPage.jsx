@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { FormAlert } from '@/components/common/FormAlert'
 import { AuthField } from '@/components/forms/AuthField'
 import { LockIcon, MailIcon } from '@/components/forms/AuthFieldIcons'
 import { useLoginForm } from '@/features/auth/hooks/useLoginForm'
@@ -39,7 +40,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+        <FormAlert>{errorMessage}</FormAlert>
 
         <Button
           type="submit"
