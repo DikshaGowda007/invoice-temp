@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Invoice\InvoiceController;
+use App\Http\Controllers\RecurringInvoice\RecurringInvoiceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -36,4 +37,17 @@ Route::prefix('invoices')->middleware(['jwt.verify'])->group(function () {
     Route::post('/line-item/add', [InvoiceController::class, 'addLineItem'])->name('InvoiceController.addLineItem');
     Route::post('/line-item/update', [InvoiceController::class, 'updateLineItem'])->name('InvoiceController.updateLineItem');
     Route::post('/line-item/delete', [InvoiceController::class, 'deleteLineItem'])->name('InvoiceController.deleteLineItem');
+});
+
+Route::prefix('recurring-invoices')->middleware(['jwt.verify'])->group(function () {
+    Route::post('/list', [RecurringInvoiceController::class, 'list'])->name('RecurringInvoiceController.list');
+    Route::post('/get', [RecurringInvoiceController::class, 'get'])->name('RecurringInvoiceController.get');
+    Route::post('/add', [RecurringInvoiceController::class, 'add'])->name('RecurringInvoiceController.add');
+    Route::post('/clone', [RecurringInvoiceController::class, 'clone'])->name('RecurringInvoiceController.clone');
+    Route::post('/edit', [RecurringInvoiceController::class, 'edit'])->name('RecurringInvoiceController.edit');
+    Route::post('/delete', [RecurringInvoiceController::class, 'delete'])->name('RecurringInvoiceController.delete');
+    Route::post('/update-status', [RecurringInvoiceController::class, 'updateStatus'])->name('RecurringInvoiceController.updateStatus');
+    Route::post('/line-item/add', [RecurringInvoiceController::class, 'addLineItem'])->name('RecurringInvoiceController.addLineItem');
+    Route::post('/line-item/update', [RecurringInvoiceController::class, 'updateLineItem'])->name('RecurringInvoiceController.updateLineItem');
+    Route::post('/line-item/delete', [RecurringInvoiceController::class, 'deleteLineItem'])->name('RecurringInvoiceController.deleteLineItem');
 });

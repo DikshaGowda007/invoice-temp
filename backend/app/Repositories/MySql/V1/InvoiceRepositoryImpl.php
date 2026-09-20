@@ -32,6 +32,14 @@ class InvoiceRepositoryImpl implements InvoiceRepository
             ->get();
     }
 
+    public function findByRecurringInvoiceIdAndUserId(int $recurringInvoiceId, int $userId): Collection
+    {
+        return Invoice::where('recurring_invoice_id', $recurringInvoiceId)
+            ->where('user_id', $userId)
+            ->where('is_deleted', CommonConstant::IS_DELETED_NO)
+            ->get();
+    }
+
     public function updateById(int $id, InvoiceDAO $invoiceDao): bool
     {
         return Invoice::where('id', $id)->update($invoiceDao->toArray());

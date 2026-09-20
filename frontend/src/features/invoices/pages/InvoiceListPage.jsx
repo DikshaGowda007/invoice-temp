@@ -1,6 +1,6 @@
 import { Copy, FileText, Plus, Search, Trash2, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { INVOICE_STATUSES, STATUS_ACCENT_STYLES, StatusBadge } from '@/components/common/StatusBadge'
 import { DateRangePickerField } from '@/components/forms/DateRangePickerField'
@@ -31,6 +31,7 @@ export default function InvoiceListPage() {
     cloneInvoice,
     cloningInvoiceId,
   } = useInvoiceList()
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [dueFrom, setDueFrom] = useState('')
@@ -197,18 +198,17 @@ export default function InvoiceListPage() {
                 </thead>
                 <tbody>
                   {filteredInvoices.map((invoice) => (
-                    <tr key={invoice.id} className="group">
+                    <tr
+                      key={invoice.id}
+                      className="group cursor-pointer transition-colors hover:bg-muted/60"
+                      onClick={() => navigate(invoiceDetailPath(invoice.id))}
+                    >
                       <td
                         className={`border-b border-b-border border-l-2 px-3.5 py-3 group-last:border-b-0 ${
                           STATUS_ACCENT_STYLES[invoice.status] ?? 'border-l-transparent'
                         }`}
                       >
-                        <Link
-                          to={invoiceDetailPath(invoice.id)}
-                          className="font-medium hover:text-primary hover:underline"
-                        >
-                          {invoice.invoice_number}
-                        </Link>
+                        <span className="font-medium">{invoice.invoice_number}</span>
                       </td>
                       <td className="border-b border-border px-4 py-3 text-muted-foreground group-last:border-0">
                         {invoice.client_name || '—'}
@@ -228,7 +228,10 @@ export default function InvoiceListPage() {
                           size="icon-sm"
                           aria-label={`Clone ${invoice.invoice_number}`}
                           disabled={cloningInvoiceId === invoice.id}
-                          onClick={() => cloneInvoice(invoice.id)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            cloneInvoice(invoice.id)
+                          }}
                         >
                           <Copy size={14} />
                         </Button>
@@ -236,7 +239,10 @@ export default function InvoiceListPage() {
                           variant="ghost"
                           size="icon-sm"
                           aria-label={`Delete ${invoice.invoice_number}`}
-                          onClick={() => requestDelete(invoice)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            requestDelete(invoice)
+                          }}
                         >
                           <Trash2 size={14} />
                         </Button>

@@ -8,6 +8,8 @@ class InvoiceDAO
 
     private ?int $clientId = null;
 
+    private ?int $recurringInvoiceId = null;
+
     private ?string $invoiceNumber = null;
 
     private ?string $status = null;
@@ -39,6 +41,9 @@ class InvoiceDAO
         }
         if (isset($this->clientId)) {
             $collection['client_id'] = $this->clientId;
+        }
+        if (isset($this->recurringInvoiceId)) {
+            $collection['recurring_invoice_id'] = $this->recurringInvoiceId;
         }
         if (isset($this->invoiceNumber)) {
             $collection['invoice_number'] = $this->invoiceNumber;
@@ -109,6 +114,18 @@ class InvoiceDAO
     public function setClientId(?int $clientId): self
     {
         $this->clientId = $clientId;
+
+        return $this;
+    }
+
+    public function getRecurringInvoiceId(): ?int
+    {
+        return $this->recurringInvoiceId;
+    }
+
+    public function setRecurringInvoiceId(?int $recurringInvoiceId): self
+    {
+        $this->recurringInvoiceId = $recurringInvoiceId;
 
         return $this;
     }

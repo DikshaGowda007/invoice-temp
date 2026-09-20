@@ -14,5 +14,7 @@ interface InvoiceRepository
 
     public function findByIdAndUserId(int $id, int $userId): Collection;
 
+    public function findByRecurringInvoiceIdAndUserId(int $recurringInvoiceId, int $userId): Collection;
+
     public function updateById(int $id, InvoiceDAO $invoiceDao): bool;
 }

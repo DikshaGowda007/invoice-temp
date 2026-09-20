@@ -26,4 +26,16 @@ export const API = {
     LINE_ITEM_UPDATE: '/invoices/line-item/update',
     LINE_ITEM_DELETE: '/invoices/line-item/delete',
   },
+  RECURRING_INVOICES: {
+    LIST: '/recurring-invoices/list',
+    GET: '/recurring-invoices/get',
+    ADD: '/recurring-invoices/add',
+    CLONE: '/recurring-invoices/clone',
+    EDIT: '/recurring-invoices/edit',
+    DELETE: '/recurring-invoices/delete',
+    UPDATE_STATUS: '/recurring-invoices/update-status',
+    LINE_ITEM_ADD: '/recurring-invoices/line-item/add',
+    LINE_ITEM_UPDATE: '/recurring-invoices/line-item/update',
+    LINE_ITEM_DELETE: '/recurring-invoices/line-item/delete',
+  },
 }

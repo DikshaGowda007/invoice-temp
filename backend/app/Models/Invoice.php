@@ -16,6 +16,7 @@ class Invoice extends Model
     protected $fillable = [
         'user_id',
         'client_id',
+        'recurring_invoice_id',
         'invoice_number',
         'status',
         'issue_date',
@@ -36,6 +37,11 @@ class Invoice extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function recurringInvoice(): BelongsTo
+    {
+        return $this->belongsTo(RecurringInvoice::class);
     }
 
     public function lineItems(): HasMany

@@ -4,6 +4,7 @@ namespace App\Http\Requests\V1\Invoice\LineItem\Update;
 
 use App\Constants\CommonConstant;
 use App\Constants\HttpStatusConstant;
+use App\Constants\LineItemConstants;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -22,9 +23,9 @@ class DetailsRequest extends FormRequest
     {
         return [
             'line_item_id' => ['required', 'integer'],
-            'description' => ['required', 'string', 'max:255'],
-            'quantity' => ['required', 'numeric', 'min:0.01'],
-            'unit_price' => ['required', 'numeric', 'min:0'],
+            'description' => ['required', 'string', 'max:'.LineItemConstants::DESCRIPTION_MAX_LENGTH],
+            'quantity' => ['required', 'numeric', 'min:'.LineItemConstants::MIN_QUANTITY],
+            'unit_price' => ['required', 'numeric', 'min:'.LineItemConstants::MIN_UNIT_PRICE],
         ];
     }
 

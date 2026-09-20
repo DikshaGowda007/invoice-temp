@@ -4,9 +4,13 @@ const STATUS_STYLES = {
   PAID: 'bg-success-bg text-success',
   OVERDUE: 'bg-danger-bg text-danger',
   CANCELLED: 'bg-muted text-muted-foreground line-through',
+  ACTIVE: 'bg-success-bg text-success',
+  PAUSED: 'bg-muted text-muted-foreground',
 }
 
 export const INVOICE_STATUSES = ['DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED']
+
+export const RECURRING_STATUSES = ['ACTIVE', 'PAUSED', 'CANCELLED']
 
 export const STATUS_ACCENT_STYLES = {
   DRAFT: 'border-l-muted-foreground/40',
