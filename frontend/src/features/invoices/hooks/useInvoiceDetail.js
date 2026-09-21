@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { invoiceApi } from '@/api/invoice.api'
+import { downloadInvoicePdf } from '@/features/invoices/utils/downloadInvoicePdf'
 import { ROUTES } from '@/utils/routePaths'
 
 export function useInvoiceDetail() {
@@ -32,42 +33,7 @@ export function useInvoiceDetail() {
   })
 
   const downloadMutation = useMutation({
-    mutationFn: async () => {
-      const dispatchRes = await invoiceApi.download(id)
-      const requestId = dispatchRes.data.data.request_id
-
-      const maxAttempts = 30
-      const pollIntervalMs = 800
-
-      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-        await new Promise((resolve) => setTimeout(resolve, pollIntervalMs))
-
-        const statusRes = await invoiceApi.downloadStatus(requestId)
-        const status = statusRes.data.data.status
-
-        if (status === 'ready') {
-          return invoiceApi.downloadResult(requestId)
-        }
-        if (status === 'failed') {
-          throw new Error('PDF generation failed. Please try again.')
-        }
-      }
-
-      throw new Error('PDF is taking longer than expected. Please try again shortly.')
-    },
-    onSuccess: (res) => {
-      const filenameMatch = res.headers['content-disposition']?.match(/filename="(.+)"/)
-      const filename = filenameMatch?.[1] ?? `${query.data?.invoice_number ?? 'invoice'}.pdf`
-
-      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }))
-      const link = document.createElement('a')
-      link.href = url
-      link.download = filename
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url)
-    },
+    mutationFn: () => downloadInvoicePdf(id, `${query.data?.invoice_number ?? 'invoice'}.pdf`),
   })
 
   return {
