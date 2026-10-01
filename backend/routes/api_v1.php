@@ -4,7 +4,23 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\RecurringInvoice\RecurringInvoiceController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/ping', function () {
+    try {
+        DB::select('select 1');
+        $db = 'connected';
+    } catch (\Throwable $e) {
+        $db = 'error: '.$e->getMessage();
+    }
+
+    return response()->json([
+        'status' => 'ok',
+        'time' => now()->toIso8601String(),
+        'db' => $db,
+    ]);
+})->name('ping');
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('AuthController.register')->middleware('throttle:10,1');
