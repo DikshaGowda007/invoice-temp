@@ -52,6 +52,9 @@ axiosClient.interceptors.response.use(
   (error) => {
     console.group('[Axios Response Error]')
 
+    console.error('Full error object:', error)
+    console.error('Serialized error:', error.toJSON ? error.toJSON() : error)
+
     console.error('Message:', error.message)
     console.error('Code:', error.code)
 
