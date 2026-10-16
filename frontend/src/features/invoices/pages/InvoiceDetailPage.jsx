@@ -1,4 +1,18 @@
-import { ArrowLeft, Download, Pencil, Trash2 } from 'lucide-react'
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRightLeft,
+  CheckCircle2,
+  Download,
+  FilePlus,
+  ListChecks,
+  ListMinus,
+  ListPlus,
+  Mail,
+  MailWarning,
+  Pencil,
+  Trash2,
+} from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -8,8 +22,25 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useInvoiceDetail } from '@/features/invoices/hooks/useInvoiceDetail'
 import { useLineItems } from '@/features/invoices/hooks/useLineItems'
-import { formatCurrency, formatDate } from '@/utils/format'
+import { formatCurrency, formatDate, formatDateTime } from '@/utils/format'
 import { invoiceEditPath, ROUTES } from '@/utils/routePaths'
+
+const ACTIVITY_STYLES = {
+  STATUS_CHANGED: { icon: ArrowRightLeft, badge: 'bg-accent text-primary' },
+  PAID: { icon: CheckCircle2, badge: 'bg-success-bg text-success' },
+  RECEIPT_SENT: { icon: Mail, badge: 'bg-info-bg text-info' },
+  RECEIPT_FAILED: { icon: MailWarning, badge: 'bg-danger-bg text-danger' },
+  INVOICE_EMAILED: { icon: Mail, badge: 'bg-info-bg text-info' },
+  INVOICE_EMAIL_FAILED: { icon: MailWarning, badge: 'bg-danger-bg text-danger' },
+  OVERDUE_REMINDER_SENT: { icon: AlertTriangle, badge: 'bg-danger-bg text-danger' },
+  OVERDUE_REMINDER_FAILED: { icon: MailWarning, badge: 'bg-danger-bg text-danger' },
+  CREATED: { icon: FilePlus, badge: 'bg-accent text-primary' },
+  EDITED: { icon: Pencil, badge: 'bg-muted text-muted-foreground' },
+  DELETED: { icon: Trash2, badge: 'bg-danger-bg text-danger' },
+  LINE_ITEM_ADDED: { icon: ListPlus, badge: 'bg-accent text-primary' },
+  LINE_ITEM_UPDATED: { icon: ListChecks, badge: 'bg-muted text-muted-foreground' },
+  LINE_ITEM_DELETED: { icon: ListMinus, badge: 'bg-muted text-muted-foreground' },
+}
 
 const STATUS_ACTIONS = {
   DRAFT: [
@@ -172,6 +203,38 @@ export default function InvoiceDetailPage() {
         onDelete={lineItems.deleteLineItem}
         isDeleting={lineItems.isDeleting}
       />
+
+      <Card className="mt-5">
+        <CardContent className="px-0 pt-0">
+          <p className="px-4 pt-4 pb-1 text-[13px] font-semibold">Activity</p>
+          {(invoice.activity ?? []).length === 0 ? (
+            <p className="px-4 py-8 text-center text-sm text-muted-foreground">No activity yet.</p>
+          ) : (
+            <ul className="px-4 pt-2 pb-4">
+              {invoice.activity.map((entry, index) => {
+                const meta = ACTIVITY_STYLES[entry.type] ?? ACTIVITY_STYLES.STATUS_CHANGED
+                const Icon = meta.icon
+                const isLast = index === invoice.activity.length - 1
+
+                return (
+                  <li key={`${entry.type}-${entry.created_at}-${index}`} className="flex gap-3">
+                    <div className="flex flex-col items-center">
+                      <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${meta.badge}`}>
+                        <Icon size={12} />
+                      </span>
+                      {!isLast && <span className="mt-1 w-px flex-1 bg-border" />}
+                    </div>
+                    <div className={isLast ? 'pb-0.5' : 'pb-5'}>
+                      <p className="text-sm font-medium">{entry.description}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{formatDateTime(entry.created_at)}</p>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
 
       <ConfirmDialog
         open={confirmingCancel}

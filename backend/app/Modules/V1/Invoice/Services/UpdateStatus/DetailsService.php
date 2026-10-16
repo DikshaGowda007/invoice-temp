@@ -3,17 +3,19 @@
 namespace App\Modules\V1\Invoice\Services\UpdateStatus;
 
 use App\Constants\InvoiceConstants;
+use App\Events\InvoicePaid;
+use App\Events\InvoiceSent;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\InvalidDataException;
 use App\Http\Requests\V1\Invoice\UpdateStatus\DetailsRequest;
 use App\Http\Services\AuthService;
-use App\Models\Invoice;
 use App\Modules\V1\Invoice\Bo\UpdateStatus\DetailsBo;
 use App\Modules\V1\Invoice\Helpers\InvoiceHelper;
 use App\Repositories\DAO\V1\InvoiceStatusHistoryDAO;
 use App\Repositories\V1\InvoiceRepository;
 use App\Repositories\V1\InvoiceStatusHistoryRepository;
 use App\Utils\CommonUtils;
+use Illuminate\Support\Collection;
 
 class DetailsService
 {
@@ -37,16 +39,24 @@ class DetailsService
         $id = $detailsBo->getId();
 
         $invoice = $this->findInvoiceOrFail($id, $userId);
-        $this->oldStatus = $invoice->status;
+        $this->oldStatus = $invoice->get('status');
 
         $this->validateStatusTransition($detailsBo->getStatus());
         $this->updateInvoiceStatus($id, $detailsBo->getStatus());
         $this->logStatusHistory($id, $detailsBo->getStatus(), $detailsBo->getNotes(), $userId);
 
+        if ($detailsBo->getStatus() === InvoiceConstants::STATUS_PAID) {
+            InvoicePaid::dispatch($id, $userId);
+        }
+
+        if ($detailsBo->getStatus() === InvoiceConstants::STATUS_SENT) {
+            InvoiceSent::dispatch($id, $userId);
+        }
+
         return CommonUtils::successResponse('Invoice status updated successfully.');
     }
 
-    private function findInvoiceOrFail(int $id, int $userId): Invoice
+    private function findInvoiceOrFail(int $id, int $userId): Collection
     {
         $invoice = $this->invoiceRepository->findByIdAndUserId($id, $userId)->first();
 
@@ -54,7 +64,7 @@ class DetailsService
             throw DataNotFoundException::withMessage('Invoice not found.');
         }
 
-        return $invoice;
+        return collect($invoice);
     }
 
     private function validateStatusTransition(string $newStatus): void

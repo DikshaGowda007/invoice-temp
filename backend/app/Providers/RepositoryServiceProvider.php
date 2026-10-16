@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Repositories\MySql\UserRepositoryImpl;
 use App\Repositories\MySql\V1\ClientRepositoryImpl;
+use App\Repositories\MySql\V1\InvoiceActivityRepositoryImpl;
 use App\Repositories\MySql\V1\InvoiceLineItemRepositoryImpl;
 use App\Repositories\MySql\V1\InvoiceRepositoryImpl;
 use App\Repositories\MySql\V1\InvoiceStatusHistoryRepositoryImpl;
@@ -11,6 +12,7 @@ use App\Repositories\MySql\V1\RecurringInvoiceLineItemRepositoryImpl;
 use App\Repositories\MySql\V1\RecurringInvoiceRepositoryImpl;
 use App\Repositories\UserRepository;
 use App\Repositories\V1\ClientRepository;
+use App\Repositories\V1\InvoiceActivityRepository;
 use App\Repositories\V1\InvoiceLineItemRepository;
 use App\Repositories\V1\InvoiceRepository;
 use App\Repositories\V1\InvoiceStatusHistoryRepository;
@@ -27,6 +29,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(InvoiceRepository::class, InvoiceRepositoryImpl::class);
         $this->app->bind(InvoiceLineItemRepository::class, InvoiceLineItemRepositoryImpl::class);
         $this->app->bind(InvoiceStatusHistoryRepository::class, InvoiceStatusHistoryRepositoryImpl::class);
+        $this->app->bind(InvoiceActivityRepository::class, InvoiceActivityRepositoryImpl::class);
         $this->app->bind(RecurringInvoiceRepository::class, RecurringInvoiceRepositoryImpl::class);
         $this->app->bind(RecurringInvoiceLineItemRepository::class, RecurringInvoiceLineItemRepositoryImpl::class);
     }
