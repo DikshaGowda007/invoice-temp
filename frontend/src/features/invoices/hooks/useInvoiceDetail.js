@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { invoiceApi } from '@/api/invoice.api'
 import { downloadInvoicePdf } from '@/features/invoices/utils/downloadInvoicePdf'
+import { payInvoice } from '@/features/invoices/utils/payInvoice'
 import { ROUTES } from '@/utils/routePaths'
 
 export function useInvoiceDetail() {
@@ -36,6 +37,11 @@ export function useInvoiceDetail() {
     mutationFn: () => downloadInvoicePdf(id, `${query.data?.invoice_number ?? 'invoice'}.pdf`),
   })
 
+  const payMutation = useMutation({
+    mutationFn: () => payInvoice(id),
+    onSuccess: invalidate,
+  })
+
   return {
     invoiceId: id,
     invoice: query.data,
@@ -54,5 +60,8 @@ export function useInvoiceDetail() {
     downloadErrorMessage: downloadMutation.isError
       ? (downloadMutation.error?.message ?? 'Could not download the PDF.')
       : null,
+    payNow: payMutation.mutate,
+    isPaying: payMutation.isPending,
+    payErrorMessage: payMutation.isError ? (payMutation.error?.message ?? 'Payment failed. Please try again.') : null,
   }
 }

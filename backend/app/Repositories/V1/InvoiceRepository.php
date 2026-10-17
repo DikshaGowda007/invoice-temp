@@ -17,4 +17,6 @@ interface InvoiceRepository
     public function findByRecurringInvoiceIdAndUserId(int $recurringInvoiceId, int $userId): Collection;
 
     public function updateById(int $id, InvoiceDAO $invoiceDao): bool;
+
+    public function findByRazorpayOrderId(string $razorpayOrderId): Collection;
 }

@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRightLeft,
   CheckCircle2,
+  CreditCard,
   Download,
   FilePlus,
   ListChecks,
@@ -75,6 +76,9 @@ export default function InvoiceDetailPage() {
     downloadPdf,
     isDownloading,
     downloadErrorMessage,
+    payNow,
+    isPaying,
+    payErrorMessage,
   } = useInvoiceDetail()
   const lineItems = useLineItems(invoiceId)
   const [confirmingCancel, setConfirmingCancel] = useState(false)
@@ -98,6 +102,7 @@ export default function InvoiceDetailPage() {
 
   const availableActions = STATUS_ACTIONS[invoice.status] ?? []
   const isFinalized = availableActions.length === 0
+  const isPayable = invoice.status === 'SENT' || invoice.status === 'OVERDUE'
 
   const handleStatusClick = (target) => {
     if (target === 'CANCELLED') {
@@ -154,6 +159,12 @@ export default function InvoiceDetailPage() {
                   <Pencil data-icon="inline-start" size={13} />
                   Edit details
                 </Button>
+                {isPayable && (
+                  <Button size="sm" disabled={isPaying} onClick={() => payNow()}>
+                    <CreditCard data-icon="inline-start" size={13} />
+                    {isPaying ? 'Processing…' : 'Pay Now'}
+                  </Button>
+                )}
                 {availableActions.map((action) => (
                   <Button
                     key={action.target}
@@ -178,6 +189,7 @@ export default function InvoiceDetailPage() {
               </div>
               {statusError && <p className="text-xs text-destructive">{statusError}</p>}
               {downloadErrorMessage && <p className="text-xs text-destructive">{downloadErrorMessage}</p>}
+              {payErrorMessage && <p className="text-xs text-destructive">{payErrorMessage}</p>}
             </div>
           </div>
         </CardContent>

@@ -32,6 +32,10 @@ class InvoiceDAO
 
     private ?int $isDeleted = null;
 
+    private ?string $razorpayOrderId = null;
+
+    private ?string $razorpayPaymentId = null;
+
     public function toArray(): array
     {
         $collection = [];
@@ -77,6 +81,12 @@ class InvoiceDAO
         }
         if (isset($this->isDeleted)) {
             $collection['is_deleted'] = $this->isDeleted;
+        }
+        if (isset($this->razorpayOrderId)) {
+            $collection['razorpay_order_id'] = $this->razorpayOrderId;
+        }
+        if (isset($this->razorpayPaymentId)) {
+            $collection['razorpay_payment_id'] = $this->razorpayPaymentId;
         }
 
         return $collection;
@@ -324,6 +334,42 @@ class InvoiceDAO
     public function setIsDeleted(?int $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of razorpayOrderId
+     */
+    public function getRazorpayOrderId(): ?string
+    {
+        return $this->razorpayOrderId;
+    }
+
+    /**
+     * Set the value of razorpayOrderId
+     */
+    public function setRazorpayOrderId(?string $razorpayOrderId): self
+    {
+        $this->razorpayOrderId = $razorpayOrderId;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of razorpayPaymentId
+     */
+    public function getRazorpayPaymentId(): ?string
+    {
+        return $this->razorpayPaymentId;
+    }
+
+    /**
+     * Set the value of razorpayPaymentId
+     */
+    public function setRazorpayPaymentId(?string $razorpayPaymentId): self
+    {
+        $this->razorpayPaymentId = $razorpayPaymentId;
 
         return $this;
     }

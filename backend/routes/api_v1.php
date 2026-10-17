@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\RecurringInvoice\RecurringInvoiceController;
+use App\Http\Controllers\Webhook\RazorpayWebhookController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -53,7 +54,12 @@ Route::prefix('invoices')->middleware(['jwt.verify'])->group(function () {
     Route::post('/line-item/add', [InvoiceController::class, 'addLineItem'])->name('InvoiceController.addLineItem');
     Route::post('/line-item/update', [InvoiceController::class, 'updateLineItem'])->name('InvoiceController.updateLineItem');
     Route::post('/line-item/delete', [InvoiceController::class, 'deleteLineItem'])->name('InvoiceController.deleteLineItem');
+    Route::post('/create-payment-order', [InvoiceController::class, 'createOrder'])->name('InvoiceController.createOrder');
 });
+
+Route::post('/webhooks/razorpay', [RazorpayWebhookController::class, 'handle'])
+    ->name('Webhook.razorpay')
+    ->middleware('throttle:60,1');
 
 Route::prefix('recurring-invoices')->middleware(['jwt.verify'])->group(function () {
     Route::post('/list', [RecurringInvoiceController::class, 'list'])->name('RecurringInvoiceController.list');

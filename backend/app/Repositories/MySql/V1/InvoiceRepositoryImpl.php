@@ -44,4 +44,11 @@ class InvoiceRepositoryImpl implements InvoiceRepository
     {
         return Invoice::where('id', $id)->update($invoiceDao->toArray());
     }
+
+    public function findByRazorpayOrderId(string $razorpayOrderId): Collection
+    {
+        return Invoice::where('razorpay_order_id', $razorpayOrderId)
+            ->where('is_deleted', CommonConstant::IS_DELETED_NO)
+            ->get();
+    }
 }

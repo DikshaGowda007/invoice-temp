@@ -8,6 +8,7 @@ use App\Exceptions\InvalidDataException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Invoice\Add\DetailsRequest as AddDetailsRequest;
 use App\Http\Requests\V1\Invoice\Clone\DetailsRequest as CloneDetailsRequest;
+use App\Http\Requests\V1\Invoice\CreateOrder\DetailsRequest as CreateOrderDetailsRequest;
 use App\Http\Requests\V1\Invoice\Delete\DetailsRequest as DeleteDetailsRequest;
 use App\Http\Requests\V1\Invoice\Download\DetailsRequest as DownloadDetailsRequest;
 use App\Http\Requests\V1\Invoice\DownloadResult\DetailsRequest as DownloadResultDetailsRequest;
@@ -21,6 +22,7 @@ use App\Http\Requests\V1\Invoice\List\DetailsRequest as ListDetailsRequest;
 use App\Http\Requests\V1\Invoice\UpdateStatus\DetailsRequest as UpdateStatusDetailsRequest;
 use App\Modules\V1\Invoice\Services\Add\DetailsService as AddDetailsService;
 use App\Modules\V1\Invoice\Services\Clone\DetailsService as CloneDetailsService;
+use App\Modules\V1\Invoice\Services\CreateOrder\DetailsService as CreateOrderDetailsService;
 use App\Modules\V1\Invoice\Services\Delete\DetailsService as DeleteDetailsService;
 use App\Modules\V1\Invoice\Services\Download\DetailsService as DownloadDetailsService;
 use App\Modules\V1\Invoice\Services\DownloadResult\DetailsService as DownloadResultDetailsService;
@@ -267,6 +269,36 @@ class InvoiceController extends Controller
 
             return response()->json(
                 $updateStatusDetailsService->updateStatus($updateStatusDetailsBo),
+                HttpStatusConstant::OK,
+            );
+        } catch (DataNotFoundException $e) {
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::NOT_FOUND,
+            );
+        } catch (InvalidDataException $e) {
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::UNPROCESSABLE_ENTITY,
+            );
+        } catch (Throwable $e) {
+            report($e);
+
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function createOrder(CreateOrderDetailsRequest $createOrderDetailsRequest): JsonResponse
+    {
+        try {
+            $createOrderDetailsService = app(CreateOrderDetailsService::class);
+            $invoiceId = (int) $createOrderDetailsRequest->input('id');
+
+            return response()->json(
+                $createOrderDetailsService->createOrder($invoiceId),
                 HttpStatusConstant::OK,
             );
         } catch (DataNotFoundException $e) {

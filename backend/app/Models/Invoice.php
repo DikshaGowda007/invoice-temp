@@ -27,6 +27,8 @@ class Invoice extends Model
         'discount_amount',
         'total',
         'notes',
+        'razorpay_order_id',
+        'razorpay_payment_id',
     ];
 
     public function user(): BelongsTo

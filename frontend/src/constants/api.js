@@ -25,6 +25,7 @@ export const API = {
     LINE_ITEM_ADD: '/invoices/line-item/add',
     LINE_ITEM_UPDATE: '/invoices/line-item/update',
     LINE_ITEM_DELETE: '/invoices/line-item/delete',
+    CREATE_PAYMENT_ORDER: '/invoices/create-payment-order',
   },
   RECURRING_INVOICES: {
     LIST: '/recurring-invoices/list',
