@@ -3,18 +3,23 @@
 namespace App\Modules\V1\Invoice\Services\Delete;
 
 use App\Constants\CommonConstant;
+use App\Constants\InvoiceActivityConstants;
 use App\Exceptions\DataNotFoundException;
 use App\Http\Services\AuthService;
-use App\Models\Invoice;
+use App\Modules\V1\Invoice\Helpers\InvoiceActivityHelper;
 use App\Repositories\DAO\V1\InvoiceDAO;
+use App\Repositories\V1\InvoiceActivityRepository;
 use App\Repositories\V1\InvoiceRepository;
 use App\Utils\CommonUtils;
+use Illuminate\Support\Collection;
 
 class DetailsService
 {
     public function __construct(
         private InvoiceDAO $invoiceDao,
+        private InvoiceActivityHelper $invoiceActivityHelper,
         private readonly InvoiceRepository $invoiceRepository,
+        private readonly InvoiceActivityRepository $invoiceActivityRepository,
         private readonly AuthService $authService,
     ) {}
 
@@ -25,10 +30,17 @@ class DetailsService
         $this->findInvoiceOrFail($id, $userId);
         $this->updateInvoice($id);
 
+        $this->invoiceActivityRepository->insert($this->invoiceActivityHelper->prepareDao(
+            $id,
+            $userId,
+            InvoiceActivityConstants::TYPE_DELETED,
+            'Invoice deleted.',
+        ));
+
         return CommonUtils::successResponse('Invoice deleted successfully.');
     }
 
-    private function findInvoiceOrFail(int $id, int $userId): Invoice
+    private function findInvoiceOrFail(int $id, int $userId): Collection
     {
         $invoice = $this->invoiceRepository->findByIdAndUserId($id, $userId)->first();
 
@@ -36,7 +48,7 @@ class DetailsService
             throw DataNotFoundException::withMessage('Invoice not found.');
         }
 
-        return $invoice;
+        return collect($invoice);
     }
 
     private function updateInvoice(int $id): void

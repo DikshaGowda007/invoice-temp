@@ -2,12 +2,14 @@
 
 namespace App\Modules\V1\Invoice\Services\Edit;
 
+use App\Constants\InvoiceActivityConstants;
 use App\Exceptions\DataNotFoundException;
 use App\Http\Requests\V1\Invoice\Edit\DetailsRequest;
 use App\Http\Services\AuthService;
-use App\Models\Invoice;
 use App\Modules\V1\Invoice\Bo\Edit\DetailsBo;
+use App\Modules\V1\Invoice\Helpers\InvoiceActivityHelper;
 use App\Modules\V1\Invoice\Helpers\InvoiceHelper;
+use App\Repositories\V1\InvoiceActivityRepository;
 use App\Repositories\V1\InvoiceLineItemRepository;
 use App\Repositories\V1\InvoiceRepository;
 use App\Utils\CommonUtils;
@@ -17,8 +19,10 @@ class DetailsService
 {
     public function __construct(
         private InvoiceHelper $invoiceHelper,
+        private InvoiceActivityHelper $invoiceActivityHelper,
         private readonly InvoiceRepository $invoiceRepository,
         private readonly InvoiceLineItemRepository $invoiceLineItemRepository,
+        private readonly InvoiceActivityRepository $invoiceActivityRepository,
         private readonly AuthService $authService,
     ) {}
 
@@ -44,12 +48,19 @@ class DetailsService
         $this->invoiceRepository->updateById($id, $invoiceDao);
         $invoice = $this->findInvoiceOrFail($id, $userId);
 
+        $this->invoiceActivityRepository->insert($this->invoiceActivityHelper->prepareDao(
+            $id,
+            $userId,
+            InvoiceActivityConstants::TYPE_EDITED,
+            'Invoice details updated.',
+        ));
+
         return CommonUtils::successDataResponse([
-            'invoice' => $this->formatInvoice(collect($invoice)),
+            'invoice' => $this->formatInvoice($invoice),
         ]);
     }
 
-    private function findInvoiceOrFail(int $id, int $userId): Invoice
+    private function findInvoiceOrFail(int $id, int $userId): Collection
     {
         $invoice = $this->invoiceRepository->findByIdAndUserId($id, $userId)->first();
 
@@ -57,7 +68,7 @@ class DetailsService
             throw DataNotFoundException::withMessage('Invoice not found.');
         }
 
-        return $invoice;
+        return collect($invoice);
     }
 
     private function formatInvoice(Collection $invoice): array

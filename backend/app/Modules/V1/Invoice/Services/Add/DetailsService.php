@@ -2,11 +2,14 @@
 
 namespace App\Modules\V1\Invoice\Services\Add;
 
+use App\Constants\InvoiceActivityConstants;
 use App\Constants\InvoiceConstants;
 use App\Http\Requests\V1\Invoice\Add\DetailsRequest;
 use App\Http\Services\AuthService;
 use App\Modules\V1\Invoice\Bo\Add\DetailsBo;
+use App\Modules\V1\Invoice\Helpers\InvoiceActivityHelper;
 use App\Modules\V1\Invoice\Helpers\InvoiceHelper;
+use App\Repositories\V1\InvoiceActivityRepository;
 use App\Repositories\V1\InvoiceRepository;
 use App\Utils\CommonUtils;
 use Illuminate\Support\Collection;
@@ -15,7 +18,9 @@ class DetailsService
 {
     public function __construct(
         private InvoiceHelper $invoiceHelper,
+        private InvoiceActivityHelper $invoiceActivityHelper,
         private readonly InvoiceRepository $invoiceRepository,
+        private readonly InvoiceActivityRepository $invoiceActivityRepository,
         private readonly AuthService $authService,
     ) {}
 
@@ -35,10 +40,17 @@ class DetailsService
         $invoiceDao->setTaxAmount(0);
         $invoiceDao->setTotal(0);
 
-        $invoice = $this->invoiceRepository->insert($invoiceDao);
+        $invoice = collect($this->invoiceRepository->insert($invoiceDao));
+
+        $this->invoiceActivityRepository->insert($this->invoiceActivityHelper->prepareDao(
+            $invoice->get('id'),
+            $userId,
+            InvoiceActivityConstants::TYPE_CREATED,
+            'Invoice created.',
+        ));
 
         return CommonUtils::successDataResponse([
-            'invoice' => $this->formatInvoice(collect($invoice)),
+            'invoice' => $this->formatInvoice($invoice),
         ]);
     }
 
