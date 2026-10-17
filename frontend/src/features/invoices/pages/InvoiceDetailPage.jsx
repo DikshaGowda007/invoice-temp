@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useInvoiceDetail } from '@/features/invoices/hooks/useInvoiceDetail'
 import { useLineItems } from '@/features/invoices/hooks/useLineItems'
-import { formatCurrency, formatDate, formatDateTime } from '@/utils/format'
+import { formatCurrency, formatDate, formatDateTime, formatRelativeTime } from '@/utils/format'
 import { invoiceEditPath, ROUTES } from '@/utils/routePaths'
 
 const ACTIVITY_STYLES = {
@@ -204,29 +204,46 @@ export default function InvoiceDetailPage() {
         isDeleting={lineItems.isDeleting}
       />
 
-      <Card className="mt-5">
+      <Card className="mt-5 shadow-[0_1px_2px_rgba(36,33,28,0.04),0_2px_8px_rgba(36,33,28,0.05)]">
         <CardContent className="px-0 pt-0">
-          <p className="px-4 pt-4 pb-1 text-[13px] font-semibold">Activity</p>
+          <div className="flex items-center gap-2 px-5 pt-[18px] pb-3.5">
+            <p className="text-sm font-semibold">Activity</p>
+            {(invoice.activity ?? []).length > 0 && (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-[11px] font-semibold text-primary">
+                {invoice.activity.length}
+              </span>
+            )}
+          </div>
           {(invoice.activity ?? []).length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-muted-foreground">No activity yet.</p>
+            <p className="px-5 pb-[18px] text-center text-sm text-muted-foreground">No activity yet.</p>
           ) : (
-            <ul className="px-4 pt-2 pb-4">
+            <ul className="px-3 pb-3">
               {invoice.activity.map((entry, index) => {
                 const meta = ACTIVITY_STYLES[entry.type] ?? ACTIVITY_STYLES.STATUS_CHANGED
                 const Icon = meta.icon
                 const isLast = index === invoice.activity.length - 1
 
                 return (
-                  <li key={`${entry.type}-${entry.created_at}-${index}`} className="flex gap-3">
+                  <li
+                    key={`${entry.type}-${entry.created_at}-${index}`}
+                    className="flex gap-3 rounded-lg px-2 py-1 transition-colors hover:bg-muted/50"
+                  >
                     <div className="flex flex-col items-center">
-                      <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${meta.badge}`}>
-                        <Icon size={12} />
+                      <span
+                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full shadow-sm ring-4 ring-card ${meta.badge}`}
+                      >
+                        <Icon size={13} />
                       </span>
                       {!isLast && <span className="mt-1 w-px flex-1 bg-border" />}
                     </div>
-                    <div className={isLast ? 'pb-0.5' : 'pb-5'}>
+                    <div className={isLast ? 'pt-0.5 pb-1' : 'pt-0.5 pb-5'}>
                       <p className="text-sm font-medium">{entry.description}</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">{formatDateTime(entry.created_at)}</p>
+                      <p
+                        className="mt-0.5 text-xs text-muted-foreground"
+                        title={formatDateTime(entry.created_at)}
+                      >
+                        {formatRelativeTime(entry.created_at)}
+                      </p>
                     </div>
                   </li>
                 )
