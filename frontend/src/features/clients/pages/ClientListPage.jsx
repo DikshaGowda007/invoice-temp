@@ -1,4 +1,4 @@
-import { Pencil, Plus, Search, Trash2, Users } from 'lucide-react'
+import { Check, FileSpreadsheet, Pencil, Plus, Search, Trash2, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useClientList } from '@/features/clients/hooks/useClientList'
+import { exportClientsToCsv } from '@/features/clients/utils/exportClientsToCsv'
 import { avatarColorFor, initialsFor } from '@/utils/avatarColor'
 import { clientEditPath, ROUTES } from '@/utils/routePaths'
 
@@ -22,6 +23,7 @@ export default function ClientListPage() {
     isDeleting,
   } = useClientList()
   const [search, setSearch] = useState('')
+  const [justExported, setJustExported] = useState(false)
 
   const [prevDeleteClient, setPrevDeleteClient] = useState(pendingDeleteClient)
   const [deleteTargetName, setDeleteTargetName] = useState(pendingDeleteClient?.name ?? null)
@@ -39,6 +41,12 @@ export default function ClientListPage() {
     )
   }, [clients, search])
 
+  const handleExportCsv = () => {
+    exportClientsToCsv(filteredClients)
+    setJustExported(true)
+    setTimeout(() => setJustExported(false), 2000)
+  }
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -50,18 +58,38 @@ export default function ClientListPage() {
       </div>
 
       {clients.length > 0 && (
-        <div className="relative mb-4 w-70">
-          <Search
-            size={15}
-            className="pointer-events-none absolute top-1/2 left-2.75 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search clients..."
-            aria-label="Search clients"
-            className="pl-8"
-          />
+        <div className="mb-4 flex items-center gap-2">
+          <div className="relative w-70">
+            <Search
+              size={15}
+              className="pointer-events-none absolute top-1/2 left-2.75 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search clients..."
+              aria-label="Search clients"
+              className="pl-8"
+            />
+          </div>
+
+          <div className="ml-auto flex items-center gap-2">
+            {justExported && (
+              <p className="animate-in fade-in slide-in-from-top-1 flex items-center gap-1 text-xs font-medium text-success duration-200">
+                <Check size={13} />
+                Exported
+              </p>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={filteredClients.length === 0}
+              onClick={handleExportCsv}
+            >
+              <FileSpreadsheet data-icon="inline-start" size={13} />
+              Export CSV
+            </Button>
+          </div>
         </div>
       )}
 

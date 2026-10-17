@@ -1,4 +1,4 @@
-import { Copy, FileText, Plus, Search, Trash2, X } from 'lucide-react'
+import { Check, Copy, Download, FileSpreadsheet, FileText, Plus, Search, Trash2, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useInvoiceList } from '@/features/invoices/hooks/useInvoiceList'
+import { exportInvoicesToCsv } from '@/features/invoices/utils/exportInvoicesToCsv'
 import { formatCurrency, formatDate } from '@/utils/format'
 import { invoiceDetailPath, ROUTES } from '@/utils/routePaths'
 
@@ -30,12 +31,16 @@ export default function InvoiceListPage() {
     isDeleting,
     cloneInvoice,
     cloningInvoiceId,
+    downloadInvoice,
+    downloadingInvoiceId,
+    downloadErrorMessage,
   } = useInvoiceList()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [dueFrom, setDueFrom] = useState('')
   const [dueTo, setDueTo] = useState('')
+  const [justExported, setJustExported] = useState(false)
 
   const [prevDeleteInvoice, setPrevDeleteInvoice] = useState(pendingDeleteInvoice)
   const [deleteTargetNumber, setDeleteTargetNumber] = useState(pendingDeleteInvoice?.invoice_number ?? null)
@@ -75,6 +80,12 @@ export default function InvoiceListPage() {
       return true
     })
   }, [invoices, search, statusFilter, dueFrom, dueTo])
+
+  const handleExportCsv = () => {
+    exportInvoicesToCsv(filteredInvoices)
+    setJustExported(true)
+    setTimeout(() => setJustExported(false), 2000)
+  }
 
   return (
     <div>
@@ -124,6 +135,24 @@ export default function InvoiceListPage() {
               Clear
             </Button>
           )}
+
+          <div className="ml-auto flex items-center gap-2">
+            {justExported && (
+              <p className="animate-in fade-in slide-in-from-top-1 flex items-center gap-1 text-xs font-medium text-success duration-200">
+                <Check size={13} />
+                Exported
+              </p>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={filteredInvoices.length === 0}
+              onClick={handleExportCsv}
+            >
+              <FileSpreadsheet data-icon="inline-start" size={13} />
+              Export CSV
+            </Button>
+          </div>
         </div>
       )}
 
@@ -148,6 +177,8 @@ export default function InvoiceListPage() {
           </CardContent>
         </Card>
       )}
+
+      {downloadErrorMessage && <p className="mb-3 text-sm text-destructive">{downloadErrorMessage}</p>}
 
       {!isLoading && !isError && invoices.length === 0 && (
         <Card>
@@ -223,6 +254,18 @@ export default function InvoiceListPage() {
                         {formatCurrency(invoice.total)}
                       </td>
                       <td className="border-b border-border px-2 py-3 text-right group-last:border-0">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`Download ${invoice.invoice_number}`}
+                          disabled={downloadingInvoiceId === invoice.id}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            downloadInvoice(invoice)
+                          }}
+                        >
+                          <Download size={14} />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon-sm"
