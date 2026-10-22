@@ -73,6 +73,7 @@ class DetailsService
             'discount_amount' => $invoice->get('discount_amount'),
             'total' => $invoice->get('total'),
             'notes' => $invoice->get('notes'),
+            'public_token' => $invoice->get('public_token'),
             'line_items' => $lineItems->map(fn ($lineItem) => [
                 'id' => $lineItem->id,
                 'description' => $lineItem->description,

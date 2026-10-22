@@ -21,4 +21,6 @@ class InvoiceConstants
         self::STATUS_OVERDUE,
         self::STATUS_CANCELLED,
     ];
+
+    public const PUBLIC_TOKEN_TTL_DAYS = 180;
 }

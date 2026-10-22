@@ -19,4 +19,6 @@ interface InvoiceRepository
     public function updateById(int $id, InvoiceDAO $invoiceDao): bool;
 
     public function findByRazorpayOrderId(string $razorpayOrderId): Collection;
+
+    public function findByPublicToken(string $publicToken): Collection;
 }

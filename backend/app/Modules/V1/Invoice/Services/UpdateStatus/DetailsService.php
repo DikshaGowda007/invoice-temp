@@ -11,11 +11,14 @@ use App\Http\Requests\V1\Invoice\UpdateStatus\DetailsRequest;
 use App\Http\Services\AuthService;
 use App\Modules\V1\Invoice\Bo\UpdateStatus\DetailsBo;
 use App\Modules\V1\Invoice\Helpers\InvoiceHelper;
+use App\Repositories\DAO\V1\InvoiceDAO;
 use App\Repositories\DAO\V1\InvoiceStatusHistoryDAO;
 use App\Repositories\V1\InvoiceRepository;
 use App\Repositories\V1\InvoiceStatusHistoryRepository;
 use App\Utils\CommonUtils;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class DetailsService
 {
@@ -51,6 +54,7 @@ class DetailsService
 
         if ($detailsBo->getStatus() === InvoiceConstants::STATUS_SENT) {
             InvoiceSent::dispatch($id, $userId);
+            $this->ensurePublicToken($id, $invoice);
         }
 
         return CommonUtils::successResponse('Invoice status updated successfully.');
@@ -114,5 +118,19 @@ class DetailsService
         $historyDao->setNotes($notes ?? 'Status updated from '.$this->oldStatus.' to '.$newStatus.'.');
 
         $this->invoiceStatusHistoryRepository->insert($historyDao);
+    }
+
+    private function ensurePublicToken(int $id, Collection $invoice): void
+    {
+        if ($invoice->get('public_token')) {
+            return;
+        }
+
+        $invoiceDao = new InvoiceDAO;
+        $invoiceDao->setPublicToken(Str::random(48));
+        $invoiceDao->setPublicTokenExpiresAt(
+            Carbon::now()->addDays(InvoiceConstants::PUBLIC_TOKEN_TTL_DAYS)->toDateTimeString(),
+        );
+        $this->invoiceRepository->updateById($id, $invoiceDao);
     }
 }

@@ -19,6 +19,8 @@ use App\Http\Requests\V1\Invoice\LineItem\Add\DetailsRequest as AddLineItemDetai
 use App\Http\Requests\V1\Invoice\LineItem\Delete\DetailsRequest as DeleteLineItemDetailsRequest;
 use App\Http\Requests\V1\Invoice\LineItem\Update\DetailsRequest as UpdateLineItemDetailsRequest;
 use App\Http\Requests\V1\Invoice\List\DetailsRequest as ListDetailsRequest;
+use App\Http\Requests\V1\Invoice\PublicCreateOrder\DetailsRequest as PublicCreateOrderDetailsRequest;
+use App\Http\Requests\V1\Invoice\PublicGet\DetailsRequest as PublicGetDetailsRequest;
 use App\Http\Requests\V1\Invoice\UpdateStatus\DetailsRequest as UpdateStatusDetailsRequest;
 use App\Modules\V1\Invoice\Services\Add\DetailsService as AddDetailsService;
 use App\Modules\V1\Invoice\Services\Clone\DetailsService as CloneDetailsService;
@@ -33,6 +35,8 @@ use App\Modules\V1\Invoice\Services\LineItem\Add\DetailsService as AddLineItemDe
 use App\Modules\V1\Invoice\Services\LineItem\Delete\DetailsService as DeleteLineItemDetailsService;
 use App\Modules\V1\Invoice\Services\LineItem\Update\DetailsService as UpdateLineItemDetailsService;
 use App\Modules\V1\Invoice\Services\List\DetailsService as ListDetailsService;
+use App\Modules\V1\Invoice\Services\PublicCreateOrder\DetailsService as PublicCreateOrderDetailsService;
+use App\Modules\V1\Invoice\Services\PublicGet\DetailsService as PublicGetDetailsService;
 use App\Modules\V1\Invoice\Services\UpdateStatus\DetailsService as UpdateStatusDetailsService;
 use App\Utils\CommonUtils;
 use Illuminate\Http\JsonResponse;
@@ -299,6 +303,61 @@ class InvoiceController extends Controller
 
             return response()->json(
                 $createOrderDetailsService->createOrder($invoiceId),
+                HttpStatusConstant::OK,
+            );
+        } catch (DataNotFoundException $e) {
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::NOT_FOUND,
+            );
+        } catch (InvalidDataException $e) {
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::UNPROCESSABLE_ENTITY,
+            );
+        } catch (Throwable $e) {
+            report($e);
+
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function publicGet(PublicGetDetailsRequest $publicGetDetailsRequest): JsonResponse
+    {
+        try {
+            $publicGetDetailsService = app(PublicGetDetailsService::class);
+            $token = (string) $publicGetDetailsRequest->input('token');
+
+            return response()->json(
+                $publicGetDetailsService->get($token),
+                HttpStatusConstant::OK,
+            );
+        } catch (DataNotFoundException $e) {
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::NOT_FOUND,
+            );
+        } catch (Throwable $e) {
+            report($e);
+
+            return response()->json(
+                CommonUtils::errorResponse($e->getMessage()),
+                HttpStatusConstant::INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function publicCreateOrder(PublicCreateOrderDetailsRequest $publicCreateOrderDetailsRequest): JsonResponse
+    {
+        try {
+            $publicCreateOrderDetailsService = app(PublicCreateOrderDetailsService::class);
+            $token = (string) $publicCreateOrderDetailsRequest->input('token');
+
+            return response()->json(
+                $publicCreateOrderDetailsService->createOrder($token),
                 HttpStatusConstant::OK,
             );
         } catch (DataNotFoundException $e) {

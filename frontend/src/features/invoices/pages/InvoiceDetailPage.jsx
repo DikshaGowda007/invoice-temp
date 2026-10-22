@@ -2,10 +2,12 @@ import {
   AlertTriangle,
   ArrowLeft,
   ArrowRightLeft,
+  Check,
   CheckCircle2,
   CreditCard,
   Download,
   FilePlus,
+  Link2,
   ListChecks,
   ListMinus,
   ListPlus,
@@ -24,7 +26,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useInvoiceDetail } from '@/features/invoices/hooks/useInvoiceDetail'
 import { useLineItems } from '@/features/invoices/hooks/useLineItems'
 import { formatCurrency, formatDate, formatDateTime, formatRelativeTime } from '@/utils/format'
-import { invoiceEditPath, ROUTES } from '@/utils/routePaths'
+import { invoiceEditPath, publicInvoicePath, ROUTES } from '@/utils/routePaths'
 
 const ACTIVITY_STYLES = {
   STATUS_CHANGED: { icon: ArrowRightLeft, badge: 'bg-accent text-primary' },
@@ -83,6 +85,7 @@ export default function InvoiceDetailPage() {
   const lineItems = useLineItems(invoiceId)
   const [confirmingCancel, setConfirmingCancel] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
 
   if (isLoading) {
     return (
@@ -110,6 +113,13 @@ export default function InvoiceDetailPage() {
       return
     }
     updateStatus(target)
+  }
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}${publicInvoicePath(invoice.public_token)}`
+    navigator.clipboard.writeText(url)
+    setLinkCopied(true)
+    setTimeout(() => setLinkCopied(false), 2000)
   }
 
   return (
@@ -159,6 +169,16 @@ export default function InvoiceDetailPage() {
                   <Pencil data-icon="inline-start" size={13} />
                   Edit details
                 </Button>
+                {invoice.public_token && (
+                  <Button size="sm" variant="outline" onClick={handleCopyLink}>
+                    {linkCopied ? (
+                      <Check data-icon="inline-start" size={13} />
+                    ) : (
+                      <Link2 data-icon="inline-start" size={13} />
+                    )}
+                    {linkCopied ? 'Copied' : 'Copy payment link'}
+                  </Button>
+                )}
                 {isPayable && (
                   <Button size="sm" disabled={isPaying} onClick={() => payNow()}>
                     <CreditCard data-icon="inline-start" size={13} />

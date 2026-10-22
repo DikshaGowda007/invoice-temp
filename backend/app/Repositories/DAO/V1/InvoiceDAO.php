@@ -36,6 +36,10 @@ class InvoiceDAO
 
     private ?string $razorpayPaymentId = null;
 
+    private ?string $publicToken = null;
+
+    private ?string $publicTokenExpiresAt = null;
+
     public function toArray(): array
     {
         $collection = [];
@@ -87,6 +91,12 @@ class InvoiceDAO
         }
         if (isset($this->razorpayPaymentId)) {
             $collection['razorpay_payment_id'] = $this->razorpayPaymentId;
+        }
+        if (isset($this->publicToken)) {
+            $collection['public_token'] = $this->publicToken;
+        }
+        if (isset($this->publicTokenExpiresAt)) {
+            $collection['public_token_expires_at'] = $this->publicTokenExpiresAt;
         }
 
         return $collection;
@@ -370,6 +380,42 @@ class InvoiceDAO
     public function setRazorpayPaymentId(?string $razorpayPaymentId): self
     {
         $this->razorpayPaymentId = $razorpayPaymentId;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of publicToken
+     */
+    public function getPublicToken(): ?string
+    {
+        return $this->publicToken;
+    }
+
+    /**
+     * Set the value of publicToken
+     */
+    public function setPublicToken(?string $publicToken): self
+    {
+        $this->publicToken = $publicToken;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of publicTokenExpiresAt
+     */
+    public function getPublicTokenExpiresAt(): ?string
+    {
+        return $this->publicTokenExpiresAt;
+    }
+
+    /**
+     * Set the value of publicTokenExpiresAt
+     */
+    public function setPublicTokenExpiresAt(?string $publicTokenExpiresAt): self
+    {
+        $this->publicTokenExpiresAt = $publicTokenExpiresAt;
 
         return $this;
     }

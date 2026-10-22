@@ -14,6 +14,7 @@ export const ROUTES = {
   RECURRING_INVOICE_DETAIL: '/recurring-invoices/:id',
   RECURRING_INVOICE_EDIT: '/recurring-invoices/:id/edit',
   SETTINGS: '/settings',
+  PUBLIC_INVOICE: '/pay/:token',
 }
 
 export const clientEditPath = (id) => `/clients/${id}/edit`
@@ -21,3 +22,4 @@ export const invoiceDetailPath = (id) => `/invoices/${id}`
 export const invoiceEditPath = (id) => `/invoices/${id}/edit`
 export const recurringInvoiceDetailPath = (id) => `/recurring-invoices/${id}`
 export const recurringInvoiceEditPath = (id) => `/recurring-invoices/${id}/edit`
+export const publicInvoicePath = (token) => `/pay/${token}`

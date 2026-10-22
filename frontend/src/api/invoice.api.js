@@ -35,4 +35,6 @@ export const invoiceApi = {
   deleteLineItem: (lineItemId) =>
     axiosClient.post(API.INVOICES.LINE_ITEM_DELETE, { line_item_id: lineItemId }),
   createPaymentOrder: (id) => axiosClient.post(API.INVOICES.CREATE_PAYMENT_ORDER, { id }),
+  publicGet: (token) => axiosClient.post(API.INVOICES.PUBLIC_GET, { token }),
+  publicCreatePaymentOrder: (token) => axiosClient.post(API.INVOICES.PUBLIC_CREATE_PAYMENT_ORDER, { token }),
 }

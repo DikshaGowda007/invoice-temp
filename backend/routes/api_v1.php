@@ -61,6 +61,11 @@ Route::post('/webhooks/razorpay', [RazorpayWebhookController::class, 'handle'])
     ->name('Webhook.razorpay')
     ->middleware('throttle:60,1');
 
+Route::prefix('invoices/public')->middleware('throttle:30,1')->group(function () {
+    Route::post('/get', [InvoiceController::class, 'publicGet'])->name('InvoiceController.publicGet');
+    Route::post('/create-payment-order', [InvoiceController::class, 'publicCreateOrder'])->name('InvoiceController.publicCreateOrder');
+});
+
 Route::prefix('recurring-invoices')->middleware(['jwt.verify'])->group(function () {
     Route::post('/list', [RecurringInvoiceController::class, 'list'])->name('RecurringInvoiceController.list');
     Route::post('/get', [RecurringInvoiceController::class, 'get'])->name('RecurringInvoiceController.get');

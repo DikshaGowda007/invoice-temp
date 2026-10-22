@@ -51,4 +51,12 @@ class InvoiceRepositoryImpl implements InvoiceRepository
             ->where('is_deleted', CommonConstant::IS_DELETED_NO)
             ->get();
     }
+
+    public function findByPublicToken(string $publicToken): Collection
+    {
+        return Invoice::with('client')
+            ->where('public_token', $publicToken)
+            ->where('is_deleted', CommonConstant::IS_DELETED_NO)
+            ->get();
+    }
 }

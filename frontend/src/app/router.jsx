@@ -12,6 +12,7 @@ import ClientListPage from '@/features/clients/pages/ClientListPage'
 import InvoiceDetailPage from '@/features/invoices/pages/InvoiceDetailPage'
 import InvoiceFormPage from '@/features/invoices/pages/InvoiceFormPage'
 import InvoiceListPage from '@/features/invoices/pages/InvoiceListPage'
+import PublicInvoicePage from '@/features/invoices/pages/PublicInvoicePage'
 import RecurringInvoiceDetailPage from '@/features/recurringInvoices/pages/RecurringInvoiceDetailPage'
 import RecurringInvoiceFormPage from '@/features/recurringInvoices/pages/RecurringInvoiceFormPage'
 import RecurringInvoiceListPage from '@/features/recurringInvoices/pages/RecurringInvoiceListPage'
@@ -19,6 +20,8 @@ import { AppLayout } from '@/layouts/AppLayout'
 import ComingSoonPage from './ComingSoonPage'
 
 const router = createBrowserRouter([
+  { path: ROUTES.PUBLIC_INVOICE, element: <PublicInvoicePage /> },
+
   {
     element: <GuestRoute />,
     children: [
