@@ -32,7 +32,6 @@ function openCheckout(options) {
         ondismiss: () => reject(new Error('Payment was not completed.')),
       },
     })
-    razorpay.on('payment.failed', () => reject(new Error('Payment failed. Please try again.')))
     razorpay.open()
   })
 }

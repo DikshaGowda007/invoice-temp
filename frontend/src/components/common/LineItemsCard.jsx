@@ -166,18 +166,43 @@ function AddLineItemRow({ onAdd, isAdding }) {
     reset({ description: '', quantity: 1, unit_price: '' })
   })
 
+  const submitOnEnter = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      submit()
+    }
+  }
+
   return (
     <tr>
       <td className="px-4 py-3">
-        <Input placeholder="Item description" {...register('description')} />
+        <Input placeholder="Item description" onKeyDown={submitOnEnter} {...register('description')} />
         {errors.description && <p className="mt-1 text-xs text-destructive">{errors.description.message}</p>}
       </td>
       <td className="px-1.5 py-3">
-        <Input type="number" step="0.01" min="0.01" className="text-right" {...register('quantity')} />
+        <Input
+          type="number"
+          step="0.01"
+          min="0.01"
+          placeholder="1"
+          aria-label="Quantity"
+          className="text-right"
+          onKeyDown={submitOnEnter}
+          {...register('quantity')}
+        />
         {errors.quantity && <p className="mt-1 text-xs text-destructive">{errors.quantity.message}</p>}
       </td>
       <td className="px-1.5 py-3">
-        <Input type="number" step="0.01" min="0.01" placeholder="0" className="text-right" {...register('unit_price')} />
+        <Input
+          type="number"
+          step="0.01"
+          min="0.01"
+          placeholder="0.00"
+          aria-label="Unit price"
+          className="text-right"
+          onKeyDown={submitOnEnter}
+          {...register('unit_price')}
+        />
         {errors.unit_price && <p className="mt-1 text-xs text-destructive">{errors.unit_price.message}</p>}
       </td>
       <td />
@@ -206,18 +231,45 @@ function EditLineItemRow({ lineItem, onCancel, onSave, isSaving }) {
 
   const submit = handleSubmit((values) => onSave(values))
 
+  const submitOnEnter = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      submit()
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
+    }
+  }
+
   return (
     <tr>
       <td className="px-4 py-3">
-        <Input {...register('description')} />
+        <Input onKeyDown={submitOnEnter} {...register('description')} />
         {errors.description && <p className="mt-1 text-xs text-destructive">{errors.description.message}</p>}
       </td>
       <td className="px-1.5 py-3">
-        <Input type="number" step="0.01" min="0.01" className="text-right" {...register('quantity')} />
+        <Input
+          type="number"
+          step="0.01"
+          min="0.01"
+          aria-label="Quantity"
+          className="text-right"
+          onKeyDown={submitOnEnter}
+          {...register('quantity')}
+        />
         {errors.quantity && <p className="mt-1 text-xs text-destructive">{errors.quantity.message}</p>}
       </td>
       <td className="px-1.5 py-3">
-        <Input type="number" step="0.01" min="0.01" className="text-right" {...register('unit_price')} />
+        <Input
+          type="number"
+          step="0.01"
+          min="0.01"
+          aria-label="Unit price"
+          className="text-right"
+          onKeyDown={submitOnEnter}
+          {...register('unit_price')}
+        />
         {errors.unit_price && <p className="mt-1 text-xs text-destructive">{errors.unit_price.message}</p>}
       </td>
       <td />
