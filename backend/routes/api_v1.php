@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Client\ClientController;
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\RecurringInvoice\RecurringInvoiceController;
 use App\Http\Controllers\Webhook\RazorpayWebhookController;
@@ -64,6 +65,10 @@ Route::post('/webhooks/razorpay', [RazorpayWebhookController::class, 'handle'])
 Route::prefix('invoices/public')->middleware('throttle:30,1')->group(function () {
     Route::post('/get', [InvoiceController::class, 'publicGet'])->name('InvoiceController.publicGet');
     Route::post('/create-payment-order', [InvoiceController::class, 'publicCreateOrder'])->name('InvoiceController.publicCreateOrder');
+});
+
+Route::prefix('dashboard')->middleware(['jwt.verify'])->group(function () {
+    Route::post('/summary', [DashboardController::class, 'summary'])->name('DashboardController.summary');
 });
 
 Route::prefix('recurring-invoices')->middleware(['jwt.verify'])->group(function () {

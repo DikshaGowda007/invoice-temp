@@ -4,6 +4,9 @@ export const API = {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
   },
+  DASHBOARD: {
+    SUMMARY: '/dashboard/summary',
+  },
   CLIENTS: {
     LIST: '/clients/list',
     GET: '/clients/get',
