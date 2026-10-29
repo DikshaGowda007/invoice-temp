@@ -34,9 +34,12 @@ export default function LoginPage() {
             {...register('password')}
           />
           <div className="mt-4 flex items-center justify-between">
-            <span className="cursor-pointer text-sm text-muted-foreground">
+            <Link
+              to={ROUTES.FORGOT_PASSWORD}
+              className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+            >
               Forgot password?
-            </span>
+            </Link>
           </div>
         </div>
 
